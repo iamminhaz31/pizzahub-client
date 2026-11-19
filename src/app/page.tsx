@@ -1,6 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 type HealthState = {
   status: "loading" | "ok" | "error";
@@ -44,10 +53,23 @@ export default function Home() {
       : "text-orange-500";
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-4 bg-orange-50 px-4 text-center">
-      <h1 className="text-4xl font-bold text-red-700">PizzaHub</h1>
-      <p className="text-gray-700">Hot &amp; Fresh Pizza Delivered to Your Door</p>
-      <p className={`text-sm font-medium ${color}`}>{health.message}</p>
+    <main className="flex min-h-screen items-center justify-center bg-background px-4">
+      <Card className="w-full max-w-md text-center">
+        <CardHeader>
+          <CardTitle className="text-3xl font-bold text-primary">
+            PizzaHub
+          </CardTitle>
+          <CardDescription>
+            Hot &amp; Fresh Pizza Delivered to Your Door
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center gap-4">
+          <p className={`text-sm font-medium ${color}`}>{health.message}</p>
+          <Button onClick={() => toast.success("ShadCN and toast are working!")}>
+            Test Toast
+          </Button>
+        </CardContent>
+      </Card>
     </main>
   );
 }
