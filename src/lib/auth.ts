@@ -1,7 +1,23 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
-import { APIError, createAuthMiddleware } from "better-auth/api";
+import {
+  APIError,
+  createAuthMiddleware,
+  getOAuthState,
+} from "better-auth/api";
 import { db } from "./mongodb";
+
+type OAuthSignupState = { role?: unknown; businessName?: unknown } | null;
+
+// For Google sign up, the chosen role travels through the OAuth flow.
+// It is client supplied, so it is always sanitized below.
+async function readOAuthSignupState(): Promise<OAuthSignupState> {
+  try {
+    return (await getOAuthState()) as OAuthSignupState;
+  } catch {
+    return null;
+  }
+}
 
 export const auth = betterAuth({
   database: mongodbAdapter(db),
@@ -72,18 +88,40 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user) => {
+          const oauthState = await readOAuthSignupState();
+
+          const requestedRole =
+            typeof oauthState?.role === "string"
+              ? oauthState.role
+              : (user as { role?: string }).role;
+
           // Admin accounts can never be created through public registration.
-          const requestedRole = (user as { role?: string }).role;
           const role = requestedRole === "vendor" ? "vendor" : "customer";
 
-          return {
-            data: {
-              ...user,
-              role,
-              isBlocked: false,
-              subscriptionPlan: "free",
-            },
+          const rawBusinessName =
+            typeof oauthState?.businessName === "string"
+              ? oauthState.businessName
+              : (user as { businessName?: string }).businessName;
+
+          const businessName =
+            typeof rawBusinessName === "string"
+              ? rawBusinessName.trim().slice(0, 80)
+              : "";
+
+          const data: Record<string, unknown> = {
+            ...user,
+            role,
+            isBlocked: false,
+            subscriptionPlan: "free",
           };
+
+          if (role === "vendor" && businessName) {
+            data.businessName = businessName;
+          } else {
+            delete data.businessName;
+          }
+
+          return { data: data as typeof user };
         },
       },
     },
