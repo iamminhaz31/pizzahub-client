@@ -182,6 +182,7 @@ export default function SignUpPage() {
     try {
       const { error } = await authClient.signIn.social({
         provider: "google",
+        requestSignUp: true,
         callbackURL: "/dashboard",
         additionalData: {
           role,
