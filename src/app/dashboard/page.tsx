@@ -18,7 +18,7 @@ export default function DashboardPlaceholderPage() {
 
   useEffect(() => {
     if (!isPending && !session) {
-      router.replace("/sign-up");
+      router.replace("/sign-in");
     }
   }, [isPending, session, router]);
 
