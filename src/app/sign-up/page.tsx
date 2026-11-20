@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -41,6 +41,7 @@ const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 export default function SignUpPage() {
   const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
 
   const [role, setRole] = useState<Role>("customer");
   const [name, setName] = useState("");
@@ -51,6 +52,13 @@ export default function SignUpPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+
+  // Already logged in users do not need the sign up page.
+  useEffect(() => {
+    if (!isPending && session && !loading) {
+      router.replace("/dashboard");
+    }
+  }, [isPending, session, loading, router]);
 
   function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0] ?? null;
@@ -118,22 +126,23 @@ export default function SignUpPage() {
 
     setLoading(true);
 
-    try {
-      let imageUrl: string | undefined;
+    let imageUrl: string | undefined;
 
-      if (imageFile) {
-        try {
-          imageUrl = await uploadImage(imageFile);
-        } catch (error) {
-          toast.error(
-            error instanceof Error
-              ? error.message
-              : "Image upload failed. Please try again."
-          );
-          return;
-        }
+    if (imageFile) {
+      try {
+        imageUrl = await uploadImage(imageFile);
+      } catch (error) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Image upload failed. Please try again."
+        );
+        setLoading(false);
+        return;
       }
+    }
 
+    try {
       const { error } = await authClient.signUp.email({
         name: name.trim(),
         email: email.trim(),
@@ -145,15 +154,19 @@ export default function SignUpPage() {
 
       if (error) {
         toast.error(error.message || "Sign up failed. Please try again.");
+        setLoading(false);
         return;
       }
 
       toast.success("Account created successfully. Welcome to PizzaHub!");
-      router.push("/dashboard");
-      router.refresh();
+
+      // A full page navigation makes sure the new session cookie is used.
+      // The button stays disabled until the page changes.
+      setTimeout(() => {
+        window.location.assign("/dashboard");
+      }, 700);
     } catch {
       toast.error("Something went wrong. Please try again.");
-    } finally {
       setLoading(false);
     }
   }
