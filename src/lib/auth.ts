@@ -33,6 +33,9 @@ export const auth = betterAuth({
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      // New accounts can only be created from the Sign Up page,
+      // where the user chooses a role.
+      disableImplicitSignUp: true,
     },
   },
 
@@ -85,6 +88,23 @@ export const auth = betterAuth({
   },
 
   databaseHooks: {
+    session: {
+      create: {
+        // Blocked users can never start a new session.
+        before: async (session, ctx) => {
+          const dbUser = await ctx?.context.internalAdapter.findUserById(
+            session.userId
+          );
+
+          if ((dbUser as { isBlocked?: boolean } | null)?.isBlocked) {
+            throw new APIError("FORBIDDEN", {
+              message: "Your account has been blocked. Please contact support.",
+              code: "ACCOUNT_BLOCKED",
+            });
+          }
+        },
+      },
+    },
     user: {
       create: {
         before: async (user) => {
