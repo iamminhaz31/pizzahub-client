@@ -10,12 +10,12 @@ export function MenuItemCard({ item }: { item: PublicMenuItem }) {
 
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
-      <div className="relative aspect-[4/3] bg-muted">
+            <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={item.images[0]}
           alt={item.itemName}
-          className="size-full object-cover"
+          className="absolute inset-0 size-full object-cover"
           loading="lazy"
         />
         {item.vendor.isPremium && (
