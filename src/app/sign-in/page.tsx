@@ -26,6 +26,31 @@ function getOAuthErrorMessage(code: string): string {
   }
 }
 
+// Where to go after sign in. Only paths inside this site are accepted,
+// so a link like /sign-in?next=https://evil.com can never send users away.
+function getSafeNext(): string {
+  const raw = new URLSearchParams(window.location.search).get("next");
+
+  if (!raw || !raw.startsWith("/")) return "/dashboard";
+  if (raw.startsWith("/sign-in") || raw.startsWith("/sign-up")) {
+    return "/dashboard";
+  }
+
+  try {
+    const url = new URL(raw, window.location.origin);
+    if (url.origin !== window.location.origin) return "/dashboard";
+    return url.pathname + url.search + url.hash;
+  } catch {
+    return "/dashboard";
+  }
+}
+
+function signInUrl(next: string): string {
+  return next === "/dashboard"
+    ? "/sign-in"
+    : `/sign-in?next=${encodeURIComponent(next)}`;
+}
+
 export default function SignInPage() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
@@ -38,7 +63,7 @@ export default function SignInPage() {
   // Already logged in users do not need the sign in page.
   useEffect(() => {
     if (!isPending && session && !loading) {
-      router.replace("/dashboard");
+      router.replace(getSafeNext());
     }
   }, [isPending, session, loading, router]);
 
@@ -49,7 +74,7 @@ export default function SignInPage() {
 
     if (errorCode) {
       toast.error(getOAuthErrorMessage(errorCode));
-      window.history.replaceState(null, "", "/sign-in");
+      window.history.replaceState(null, "", signInUrl(getSafeNext()));
     }
   }, []);
 
@@ -82,10 +107,12 @@ export default function SignInPage() {
 
       toast.success("Signed in successfully. Welcome back!");
 
+      const destination = getSafeNext();
+
       // A full page navigation makes sure the new session cookie is used.
       // The button stays disabled until the page changes.
       setTimeout(() => {
-        window.location.assign("/dashboard");
+        window.location.assign(destination);
       }, 700);
     } catch {
       toast.error("Something went wrong. Please try again.");
@@ -97,10 +124,11 @@ export default function SignInPage() {
     setGoogleLoading(true);
 
     try {
+      const next = getSafeNext();
       const { error } = await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/dashboard",
-        errorCallbackURL: "/sign-in",
+        callbackURL: next,
+        errorCallbackURL: signInUrl(next),
       });
 
       if (error) {
