@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
+import { jwt } from "better-auth/plugins";
 import {
   APIError,
   createAuthMiddleware,
@@ -28,6 +29,17 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 6,
   },
+
+  plugins: [
+    jwt({
+      jwt: {
+        expirationTime: "15m",
+        // Keep the token small. Role and blocked status are always
+        // read from the database on the server, never from the token.
+        definePayload: ({ user }) => ({ email: user.email }),
+      },
+    }),
+  ],
 
   socialProviders: {
     google: {

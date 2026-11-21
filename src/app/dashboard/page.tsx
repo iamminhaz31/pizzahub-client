@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/session";
 import { SignOutButton } from "@/components/auth/SignOutButton";
+import { ApiTestButtons } from "@/components/auth/ApiTestButtons";
 import {
   Card,
   CardContent,
@@ -30,6 +31,7 @@ async function DashboardContent() {
         <p>Role: {user.role ?? "customer"}</p>
         {user.businessName && <p>Restaurant: {user.businessName}</p>}
         <SignOutButton />
+        <ApiTestButtons />
       </CardContent>
     </Card>
   );
