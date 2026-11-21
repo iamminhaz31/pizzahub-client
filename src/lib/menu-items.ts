@@ -63,3 +63,54 @@ export function validateMenuItemInput(values: MenuItemInput): MenuItemErrors {
 
   return errors;
 }
+
+export type MenuItemStatus = "pending" | "approved" | "rejected" | "inactive";
+
+export type MenuItem = {
+  _id: string;
+  vendorId: string;
+  itemName: string;
+  category: string;
+  description: string;
+  price: number;
+  location: string;
+  images: string[];
+  status: MenuItemStatus;
+  createdAt: string;
+  updatedAt?: string;
+};
+
+export type MyMenuItemsResponse = {
+  items: MenuItem[];
+  counts: {
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+    inactive: number;
+  };
+  plan: {
+    name: "free" | "premium";
+    maxActive: number | null;
+    activeUsed: number;
+  };
+};
+
+export const STATUS_FILTERS = [
+  { value: "all", label: "All statuses" },
+  { value: "pending", label: "Pending" },
+  { value: "approved", label: "Approved" },
+  { value: "rejected", label: "Rejected" },
+  { value: "inactive", label: "Paused" },
+] as const;
+
+export function menuItemToFormValues(item: MenuItem): MenuItemInput {
+  return {
+    itemName: item.itemName,
+    category: item.category,
+    description: item.description,
+    price: String(item.price),
+    location: item.location,
+    images: item.images,
+  };
+}
