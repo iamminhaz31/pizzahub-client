@@ -3,6 +3,18 @@ export type NavLink = {
   href: string;
 };
 
+export type UserRole = "customer" | "vendor" | "admin";
+
+// Any unknown or missing role is treated as a customer.
+export function normalizeRole(role?: string | null): UserRole {
+  if (role === "admin" || role === "vendor") return role;
+  return "customer";
+}
+
+export function getDashboardPath(role?: string | null): string {
+  return `/dashboard/${normalizeRole(role)}`;
+}
+
 export const publicLinks: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "Browse Menu", href: "/menu" },
@@ -10,7 +22,7 @@ export const publicLinks: NavLink[] = [
 
 // One extra link per role, shown after Home and Browse Menu.
 export function getRoleLinks(role?: string | null): NavLink[] {
-  switch (role) {
+  switch (normalizeRole(role)) {
     case "vendor":
       return [{ label: "My Menu Items", href: "/dashboard/vendor/menu-items" }];
     case "admin":
@@ -35,6 +47,6 @@ export function getInitials(name?: string | null): string {
 }
 
 export function formatRole(role?: string | null): string {
-  if (!role) return "Customer";
-  return role.charAt(0).toUpperCase() + role.slice(1);
+  const value = normalizeRole(role);
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }
