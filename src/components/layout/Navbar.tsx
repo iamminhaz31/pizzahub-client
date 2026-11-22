@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -21,6 +22,7 @@ import { handleSignOut } from "@/lib/sign-out";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/layout/Logo";
 import { UserMenu } from "@/components/layout/UserMenu";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -65,6 +67,9 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-3">
+          {/* Theme toggle */}
+          <ThemeToggle />
+
           <div className="hidden items-center gap-3 md:flex">
             {isPending ? (
               <Skeleton className="h-9 w-28" />
@@ -100,6 +105,7 @@ export function Navbar() {
                 <MenuIcon className="size-5" />
               </Button>
             </SheetTrigger>
+
             <SheetContent side="right" className="w-72">
               <SheetHeader>
                 <SheetTitle>Menu</SheetTitle>
@@ -142,6 +148,7 @@ export function Navbar() {
                         {formatRole(user.role)}
                       </p>
                     </div>
+
                     <Link
                       href={dashboardHref}
                       onClick={() => setOpen(false)}
@@ -150,6 +157,7 @@ export function Navbar() {
                       <LayoutDashboardIcon className="size-4" />
                       Dashboard
                     </Link>
+
                     <Link
                       href={profileSettingsHref}
                       onClick={() => setOpen(false)}
@@ -158,10 +166,12 @@ export function Navbar() {
                       <SettingsIcon className="size-4" />
                       Profile Settings
                     </Link>
+
                     <button
                       type="button"
                       onClick={() => {
                         void handleSignOut();
+                        setOpen(false);
                       }}
                       className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-destructive hover:bg-muted"
                     >
@@ -178,6 +188,7 @@ export function Navbar() {
                     >
                       <Link href="/sign-in">Sign In</Link>
                     </Button>
+
                     <Button asChild onClick={() => setOpen(false)}>
                       <Link href="/sign-up">Sign Up</Link>
                     </Button>

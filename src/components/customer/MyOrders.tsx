@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -14,6 +15,7 @@ import { toast } from "sonner";
 
 import { OrderDetailsDialog } from "@/components/customer/OrderDetailsDialog";
 import { OrderStatusBadge } from "@/components/orders/OrderStatusBadge";
+import { OrderTimeline } from "@/components/orders/OrderTimeline";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -64,10 +66,12 @@ export function MyOrders() {
     () => (status === "all" ? "" : `?status=${status}`),
     [status]
   );
+
   const requestKey = `${query}#${reloadToken}`;
 
   useEffect(() => {
     let cancelled = false;
+
     apiFetch<MyOrdersResponse>(`/api/orders/mine${query}`)
       .then((data) => {
         if (!cancelled) setResult({ key: requestKey, data });
@@ -77,6 +81,7 @@ export function MyOrders() {
           setResult({ key: requestKey, error: errorMessage(error) });
         }
       });
+
     return () => {
       cancelled = true;
     };
@@ -88,12 +93,15 @@ export function MyOrders() {
 
   async function confirmCancel() {
     if (!cancelling) return;
+
     setCancelBusy(true);
+
     try {
       const response = await apiFetch<{ message: string }>(
         `/api/orders/mine/${cancelling._id}/cancel`,
         { method: "PATCH" }
       );
+
       toast.success(response.message);
       setCancelling(null);
       reload();
@@ -119,6 +127,7 @@ export function MyOrders() {
         ) : (
           <span />
         )}
+
         <Select value={status} onValueChange={setStatus}>
           <SelectTrigger className="w-full sm:w-48" aria-label="Filter by status">
             <SelectValue placeholder="Filter by status" />
@@ -157,6 +166,7 @@ export function MyOrders() {
               ? "You have not placed any orders yet."
               : "No orders match this filter."}
           </p>
+
           {status === "all" && (
             <Button asChild className="mt-4">
               <Link href="/menu">Browse Menu</Link>
@@ -195,13 +205,17 @@ export function MyOrders() {
                     <h3 className="truncate text-lg font-semibold">
                       {order.item?.itemName ?? "Item no longer available"}
                     </h3>
+
                     {order.item && (
                       <p className="text-sm text-muted-foreground">
                         {order.item.category} · ${order.item.price.toFixed(2)}
                       </p>
                     )}
                   </div>
-                  <OrderStatusBadge status={order.status} />
+
+                  <div className="flex flex-col items-start gap-3">
+                    <OrderStatusBadge status={order.status} />
+                  </div>
                 </div>
 
                 <ul className="grid gap-1 text-sm text-muted-foreground sm:grid-cols-2">
@@ -211,10 +225,14 @@ export function MyOrders() {
                       {order.vendor?.name ?? "Unknown restaurant"}
                     </span>
                   </li>
+
                   <li className="flex items-center gap-2">
                     <CalendarIcon className="size-4 shrink-0" />
-                    <span>Delivery: {formatDeliveryDate(order.deliveryDate)}</span>
+                    <span>
+                      Delivery: {formatDeliveryDate(order.deliveryDate)}
+                    </span>
                   </li>
+
                   <li className="flex items-center gap-2 sm:col-span-2">
                     <MapPinIcon className="size-4 shrink-0" />
                     <span className="truncate">{order.deliveryAddress}</span>
@@ -225,6 +243,8 @@ export function MyOrders() {
                   Requested on {formatRequestDate(order.createdAt)}
                 </p>
 
+                <OrderTimeline status={order.status} />
+
                 <div className="mt-auto flex flex-wrap gap-2">
                   <Button
                     size="sm"
@@ -234,6 +254,7 @@ export function MyOrders() {
                     <EyeIcon className="mr-1 size-4" />
                     View
                   </Button>
+
                   {order.status === "pending" && (
                     <Button
                       size="sm"
@@ -274,6 +295,7 @@ export function MyOrders() {
                 : "This order will be cancelled. This cannot be undone."}
             </DialogDescription>
           </DialogHeader>
+
           <DialogFooter>
             <Button
               variant="outline"
@@ -282,6 +304,7 @@ export function MyOrders() {
             >
               Keep order
             </Button>
+
             <Button
               variant="destructive"
               disabled={cancelBusy}
