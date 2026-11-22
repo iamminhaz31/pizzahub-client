@@ -124,3 +124,12 @@ export function formatRequestDate(value: string) {
     day: "numeric",
   });
 }
+
+export type VendorOrder = Omit<CustomerOrder, "vendor"> & {
+  customer: { name: string; email: string; image: string | null } | null;
+};
+
+export type VendorOrdersResponse = {
+  orders: VendorOrder[];
+  counts: OrderCounts;
+};
