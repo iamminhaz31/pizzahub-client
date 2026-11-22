@@ -1,16 +1,9 @@
+
 import { requireRole } from "@/lib/session";
-import { formatRole } from "@/lib/navigation";
-import { WelcomeCard } from "@/components/dashboard/WelcomeCard";
+import { VendorOverview } from "@/components/vendor/VendorOverview";
 
 export default async function VendorOverviewPage() {
-  const user = await requireRole("vendor");
+  await requireRole("vendor");
 
-  return (
-    <WelcomeCard
-      name={user.name}
-      email={user.email}
-      roleLabel={formatRole(user.role)}
-      businessName={user.businessName}
-    />
-  );
+  return <VendorOverview />;
 }
