@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
+import { OrderDialog } from "@/components/menu/OrderDialog";
 import type { PublicMenuItem } from "@/lib/browse-menu";
 
 export type Viewer = {
@@ -55,16 +54,10 @@ export function OrderPanel({
   return (
     <div className="space-y-3 rounded-xl border bg-card p-4">
       <p className="text-sm text-muted-foreground">
-        Choose your delivery date and address in the next step.
+        Choose your delivery date and address, and the restaurant will confirm
+        your order.
       </p>
-      {/* TEMPORARY: replaced by the real order form in the Orders step. */}
-      <Button
-        size="lg"
-        className="w-full"
-        onClick={() => toast.info("The order form is coming in the next update.")}
-      >
-        Order Now
-      </Button>
+      <OrderDialog item={item} />
     </div>
   );
 }
