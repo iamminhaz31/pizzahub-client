@@ -1,16 +1,15 @@
-import { requireRole } from "@/lib/session";
-import { formatRole } from "@/lib/navigation";
-import { WelcomeCard } from "@/components/dashboard/WelcomeCard";
+import { AdminOverview } from "@/components/admin/AdminOverview";
 
-export default async function AdminOverviewPage() {
-  const user = await requireRole("admin");
-
+export default function AdminDashboardPage() {
   return (
-    <WelcomeCard
-      name={user.name}
-      email={user.email}
-      roleLabel={formatRole(user.role)}
-      businessName={user.businessName}
-    />
+    <div className="mx-auto max-w-6xl space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Admin Overview</h1>
+        <p className="text-muted-foreground">
+          Platform activity at a glance.
+        </p>
+      </div>
+      <AdminOverview />
+    </div>
   );
 }
