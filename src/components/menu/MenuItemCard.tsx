@@ -9,13 +9,13 @@ export function MenuItemCard({ item }: { item: PublicMenuItem }) {
   const vendorName = item.vendor.businessName || item.vendor.name;
 
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
-            <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-xl border bg-card shadow-sm transition duration-200 focus-within:ring-2 focus-within:ring-ring hover:shadow-lg motion-safe:hover:-translate-y-1">
+      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={item.images[0]}
           alt={item.itemName}
-          className="absolute inset-0 size-full object-cover"
+          className="absolute inset-0 size-full object-cover transition-transform duration-500 motion-safe:group-hover:scale-105"
           loading="lazy"
         />
         {item.vendor.isPremium && (
@@ -28,7 +28,15 @@ export function MenuItemCard({ item }: { item: PublicMenuItem }) {
 
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="space-y-2">
-          <h3 className="line-clamp-1 text-lg font-semibold">{item.itemName}</h3>
+          <h3 className="line-clamp-1 text-lg font-semibold transition-colors group-hover:text-primary">
+            {/* This link covers the whole card, so the card is clickable. */}
+            <Link
+              href={`/menu/${item._id}`}
+              className="outline-none after:absolute after:inset-0 after:content-['']"
+            >
+              {item.itemName}
+            </Link>
+          </h3>
           <Badge variant="secondary">{item.category}</Badge>
         </div>
 
@@ -47,7 +55,7 @@ export function MenuItemCard({ item }: { item: PublicMenuItem }) {
           <p className="text-xl font-bold text-primary">
             ${item.price.toFixed(2)}
           </p>
-          <Button asChild size="sm">
+          <Button asChild size="sm" className="relative z-10">
             <Link href={`/menu/${item._id}`}>View Details</Link>
           </Button>
         </div>
