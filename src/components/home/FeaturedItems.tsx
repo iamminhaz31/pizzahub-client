@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { ArrowRightIcon, RefreshCwIcon } from "lucide-react";
 
 import { FadeIn } from "@/components/home/FadeIn";
 import { MenuGridSkeleton } from "@/components/menu/MenuGridSkeleton";
@@ -16,6 +17,7 @@ type State =
 
 export function FeaturedItems() {
   const [state, setState] = useState<State>({ phase: "loading" });
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -29,7 +31,12 @@ export function FeaturedItems() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [attempt]);
+
+  function retry() {
+    setState({ phase: "loading" });
+    setAttempt((value) => value + 1);
+  }
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6">
@@ -41,21 +48,33 @@ export function FeaturedItems() {
           </p>
         </div>
         <Button asChild variant="outline">
-          <Link href="/menu">View full menu</Link>
+          <Link href="/menu">
+            View full menu
+            <ArrowRightIcon className="ml-1 size-4" />
+          </Link>
         </Button>
       </FadeIn>
 
-      {state.phase === "loading" && <MenuGridSkeleton count={4} />}
+      {state.phase === "loading" && <MenuGridSkeleton count={6} />}
 
       {state.phase === "error" && (
-        <div className="rounded-xl border border-dashed p-10 text-center text-muted-foreground">
-          Menu items could not be loaded right now. Please try again later.
+        <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed p-10 text-center">
+          <p className="text-muted-foreground">
+            Menu items could not be loaded right now. Please try again.
+          </p>
+          <Button variant="outline" onClick={retry}>
+            <RefreshCwIcon className="mr-2 size-4" />
+            Try again
+          </Button>
         </div>
       )}
 
       {state.phase === "ready" && state.items.length === 0 && (
-        <div className="rounded-xl border border-dashed p-10 text-center text-muted-foreground">
-          No menu items are available yet. Please check back soon.
+        <div className="rounded-xl border border-dashed p-10 text-center">
+          <p className="font-medium">No featured items yet</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            New pizzas are added by our restaurants every day. Please check back soon.
+          </p>
         </div>
       )}
 
