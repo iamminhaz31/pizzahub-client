@@ -38,7 +38,7 @@ function PizzaIllustration() {
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-orange-100 via-amber-50 to-red-100">
+    <section className="relative overflow-hidden bg-gradient-to-br from-orange-100 via-amber-50 to-red-100 dark:from-[#2a1710] dark:via-[#1a1210] dark:to-[#3a1414]">
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 md:py-20">
         <motion.div
           initial={{ opacity: 0, y: 24 }}

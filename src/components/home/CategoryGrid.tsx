@@ -38,7 +38,7 @@ export function CategoryGrid() {
   }, []);
 
   return (
-    <section className="bg-orange-50/60 py-14">
+    <section className="bg-orange-50/60 py-14 dark:bg-muted/40">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
         <FadeIn className="mb-8">
           <h2 className="text-3xl font-bold tracking-tight">Pizza Categories</h2>
