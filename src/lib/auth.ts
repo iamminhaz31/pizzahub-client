@@ -82,6 +82,28 @@ export const auth = betterAuth({
         required: false,
         input: false,
       },
+      // Contact and location details. They are edited only through the
+      // Express profile route, never through public sign up.
+      phone: {
+        type: "string",
+        required: false,
+        input: false,
+      },
+      area: {
+        type: "string",
+        required: false,
+        input: false,
+      },
+      address: {
+        type: "string",
+        required: false,
+        input: false,
+      },
+      description: {
+        type: "string",
+        required: false,
+        input: false,
+      },
     },
   },
 
