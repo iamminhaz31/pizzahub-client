@@ -64,12 +64,13 @@ export function Hero() {
           className="relative mx-auto w-full max-w-md"
         >
           <div className="relative aspect-square overflow-hidden rounded-full border-8 border-white/80 shadow-2xl dark:border-white/10">
+            {/* The photo is already compressed, so it is served as it is. */}
             <Image
               src="/images/hero-pizza.jpg"
               alt="A freshly baked pizza"
               fill
               priority
-              sizes="(min-width: 768px) 28rem, 90vw"
+              unoptimized
               className="object-cover"
             />
           </div>
