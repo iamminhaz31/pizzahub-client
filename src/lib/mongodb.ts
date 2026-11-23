@@ -18,11 +18,18 @@ declare global {
   var _mongoClient: MongoClient | undefined;
 }
 
-const client = global._mongoClient ?? new MongoClient(uri);
+// One client is reused everywhere, in development and in production.
+// Creating a new client for every module load opens extra connections
+// and can leave a closed topology behind.
+const client =
+  global._mongoClient ??
+  new MongoClient(uri, {
+    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 10000,
+    connectTimeoutMS: 10000,
+  });
 
-if (process.env.NODE_ENV !== "production") {
-  global._mongoClient = client;
-}
+global._mongoClient = client;
 
 export const db = client.db(process.env.DB_NAME || "pizzahub");
 export { client };
