@@ -1,4 +1,3 @@
-
 import { Suspense } from "react";
 import { requireUser } from "@/lib/session";
 import type { ProfileUser } from "@/lib/profile";
@@ -14,6 +13,10 @@ async function ProfileContent() {
     image: user.image ?? null,
     role: user.role ?? "customer",
     businessName: user.businessName ?? null,
+    phone: user.phone ?? null,
+    area: user.area ?? null,
+    address: user.address ?? null,
+    description: user.description ?? null,
   };
 
   return (
@@ -23,7 +26,7 @@ async function ProfileContent() {
           Profile Settings
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Manage your account information and profile picture.
+          Manage your account information, contact details and profile picture.
         </p>
       </div>
 
